@@ -29,24 +29,68 @@
         .total-row { background: #1a1a1a; font-weight: bold; color: white; border-top: 2px solid #d4af37; }
         
         .ranking-title { color: #d4af37; font-size: 1.2em; text-transform: uppercase; text-align: center; margin: 30px 0 15px; font-weight: bold; letter-spacing: 2px; }
-        .podium-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         
-        .rank-card { background: #111; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; border-left: 5px solid #444; border: 1px solid #222; }
-        .rank-card.oro { border-left-color: #d4af37; background: linear-gradient(90deg, #1a1608 0%, #111 100%); border: 1px solid #d4af37; }
-        .rank-card.plata { border-left-color: #c0c0c0; }
-        .rank-card.bronce { border-left-color: #cd7f32; }
+        .casa-box { background: #1a1a1a; border: 1px dashed #d4af37; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: center; }
+        .casa-box h4 { margin: 0 0 5px 0; color: #d4af37; font-size: 0.8em; text-transform: uppercase; }
+        .casa-box p { margin: 0; font-size: 1em; font-weight: bold; }
 
-        .rank-info { display: flex; align-items: center; gap: 12px; }
-        .rank-medal { font-size: 2.2em; }
-        .rank-name { font-size: 1.1em; font-weight: bold; color: #fff; text-transform: uppercase; display: block; }
-        .rank-qty { font-size: 0.85em; color: #d4af37; font-weight: bold; }
+        .podium-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         
-        /* Ajuste Letras Ranking Derecha - MÁS GRANDES */
+        .rank-card { 
+            position: relative;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 15px; 
+            padding: 18px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border: 1px solid #333;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .rank-card.oro { 
+            border: 1px solid #d4af37; 
+            background: linear-gradient(145deg, #2a2208, #0a0a0a);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        .rank-card.oro::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .rank-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #222; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1.2em; border: 2px solid #444; color: #fff;
+        }
+        .oro .rank-avatar { border-color: #d4af37; background: #332b0a; }
+
+        .rank-info { display: flex; align-items: center; gap: 15px; flex: 1; }
+        
+        .rank-main-text { display: flex; flex-direction: column; }
+        .rank-name { font-size: 1.1em; font-weight: bold; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .rank-qty { font-size: 0.8em; color: #d4af37; font-weight: bold; margin-top: 2px; }
+
         .rank-monto { text-align: right; }
-        .rank-monto b { display: block; color: #fff; font-size: 1.1em; margin-bottom: 2px; font-weight: bold; }
+        .rank-monto b { display: block; color: #fff; font-size: 1.15em; font-weight: 900; }
+        .rank-monto span { font-size: 0.6em; color: #888; text-transform: uppercase; }
 
-        .lista-ranking-resto { background: #0c0c0c; border-radius: 8px; padding: 5px; }
-        .row-ranking { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #222; font-size: 0.85em; align-items: center; }
+        .rank-badge {
+            position: absolute; top: 0; right: 0; padding: 4px 12px;
+            font-size: 1.2em; font-weight: bold; border-bottom-left-radius: 10px;
+            background: #333; color: #aaa;
+        }
+        .oro .rank-badge { background: #d4af37; color: #000; }
+
+        .lista-ranking-resto { background: #0c0c0c; border-radius: 10px; padding: 5px; border: 1px solid #222; }
+        .row-ranking { 
+            display: flex; justify-content: space-between; padding: 12px 15px; 
+            border-bottom: 1px solid #1a1a1a; font-size: 0.9em; align-items: center; 
+        }
+        .row-ranking:last-child { border-bottom: none; }
         .loading { text-align: center; color: #d4af37; padding: 15px; font-size: 0.8em; }
     </style>
 </head>
@@ -99,17 +143,21 @@
 
 <table class="tabla-socios">
     <thead>
-        <tr id="head-tabla">
-            </tr>
+        <tr id="head-tabla"></tr>
     </thead>
     <tbody id="lista-reporte"></tbody>
 </table>
 
-<div class="ranking-title">🏆 RANKING POR BOTELLAS</div>
+<div class="ranking-title">🏆 RANKING MENSUAL</div>
 
 <div class="filter-section" style="margin-top: 10px;">
     <label>Mes del Ranking:</label>
     <input type="month" id="mes-ranking" onchange="cargarRanking()">
+</div>
+
+<div id="cuadrante-casa" style="display:none;" class="casa-box">
+    <h4>Ventas de la Casa</h4>
+    <p id="info-casa">0 Botellas | Total: S/ 0.00</p>
 </div>
 
 <div id="ranking-container">
@@ -153,13 +201,12 @@
         const modo = document.getElementById('rango-tiempo').value;
         const lista = document.getElementById('lista-reporte');
         const head = document.getElementById('head-tabla');
-        lista.innerHTML = '<tr><td colspan="5" class="loading">Cargando...</td></tr>';
+        lista.innerHTML = '<tr><td colspan="4" class="loading">Cargando...</td></tr>';
 
         if(modo === 'dia') {
-            head.innerHTML = '<th style="width: 25%;">Taxista</th><th style="width: 25%;">Concepto</th><th style="width: 25%;">Venta</th><th style="width: 25%;">Pago</th>';
+            head.innerHTML = '<th style="width: 25%;">Taxista</th><th style="width: 25%;">Concepto</th><th style="width: 25%;">Precio</th><th style="width: 25%;">Comisión</th>';
         } else {
-            // Cabecera para vistas agrupadas con separación de Comision y Bonos
-            head.innerHTML = '<th style="width: 25%;">Taxista</th><th style="width: 15%;">Bot.</th><th style="width: 20%;">Com.</th><th style="width: 20%;">Bonos</th><th style="width: 20%;">Total</th>';
+            head.innerHTML = '<th style="width: 25%;">Taxista</th><th style="width: 20%;">Bot.</th><th style="width: 30%;">Precio B.</th><th style="width: 25%;">Comisión</th>';
         }
 
         let consulta = db.collection("comisiones_taxis");
@@ -194,7 +241,7 @@
             lista.innerHTML = "";
             let vT = 0, cT = 0;
             if (snap.empty) {
-                lista.innerHTML = `<tr><td colspan="${modo === 'dia' ? 4 : 5}" style="padding:20px; color:#666;">Sin registros</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="4" style="padding:20px; color:#666;">Sin registros</td></tr>`;
                 actualizarStats(0,0); return;
             }
 
@@ -202,37 +249,31 @@
                 snap.forEach(doc => {
                     const d = doc.data();
                     vT += (d.p || 0); cT += (d.m || 0);
-                    const ventaVal = (d.b === "Bono") ? "---" : `S/ ${d.p}`;
-                    lista.innerHTML += `<tr><td style="color:#d4af37; font-weight:bold;">${d.t}</td><td>${d.b}</td><td>${ventaVal}</td><td>S/ ${d.m}</td></tr>`;
+                    lista.innerHTML += `<tr><td style="color:#d4af37; font-weight:bold;">${d.t}</td><td>${d.b}</td><td>S/ ${d.p || 0}</td><td>S/ ${d.m || 0}</td></tr>`;
                 });
-                lista.innerHTML += `<tr class="total-row"><td colspan="2">TOTAL</td><td>S/ ${vT}</td><td>S/ ${cT}</td></tr>`;
+                lista.innerHTML += `<tr class="total-row"><td colspan="2">TOTAL</td><td>S/ ${vT.toFixed(2)}</td><td>S/ ${cT.toFixed(2)}</td></tr>`;
             } else {
                 let agrupado = {};
                 snap.forEach(doc => {
                     const d = doc.data();
                     vT += (d.p || 0); cT += (d.m || 0);
-                    if(!agrupado[d.t]) agrupado[d.t] = { b: 0, com: 0, bon: 0 };
-                    if(d.b === "Botella") {
-                        agrupado[d.t].b += 1;
-                        agrupado[d.t].com += (d.m || 0);
-                    } else {
-                        agrupado[d.t].bon += (d.m || 0);
-                    }
+                    if(!agrupado[d.t]) agrupado[d.t] = { b: 0, pTot: 0, com: 0 };
+                    agrupado[d.t].b += 1;
+                    agrupado[d.t].pTot += (d.p || 0);
+                    agrupado[d.t].com += (d.m || 0);
                 });
                 let sortable = Object.entries(agrupado).sort((a,b) => b[1].b - a[1].b);
                 sortable.forEach(item => {
-                    const totalTax = item[1].com + item[1].bon;
                     lista.innerHTML += `<tr>
                         <td style="color:#d4af37; font-weight:bold;">${item[0]}</td>
                         <td>${item[1].b}</td>
-                        <td>S/ ${item[1].com}</td>
-                        <td>S/ ${item[1].bon}</td>
-                        <td style="color:#fff; font-weight:bold;">S/ ${totalTax}</td>
+                        <td>S/ ${item[1].pTot.toFixed(2)}</td>
+                        <td style="color:#fff; font-weight:bold;">S/ ${item[1].com.toFixed(2)}</td>
                     </tr>`;
                 });
-                lista.innerHTML += `<tr class="total-row"><td colspan="4">SUMA TOTAL PAGOS</td><td>S/ ${cT}</td></tr>`;
+                lista.innerHTML += `<tr class="total-row"><td colspan="3">SUMA TOTAL COMISIONES</td><td>S/ ${cT.toFixed(2)}</td></tr>`;
             }
-            actualizarStats(vT, cT);
+            actualizarStats(vT.toFixed(2), cT.toFixed(2));
         });
     }
 
@@ -240,8 +281,12 @@
         const mesRanking = document.getElementById('mes-ranking').value;
         const podium = document.getElementById('podium');
         const resto = document.getElementById('lista-resto');
+        const casaBox = document.getElementById('cuadrante-casa');
+        const infoCasa = document.getElementById('info-casa');
+        
         podium.innerHTML = '<div class="loading">Cargando Ranking...</div>';
         resto.innerHTML = "";
+        casaBox.style.display = "none";
 
         db.collection("comisiones_taxis").where("f", ">=", mesRanking + "-01").where("f", "<=", mesRanking + "-31").get().then(snap => {
             podium.innerHTML = "";
@@ -249,44 +294,61 @@
                 podium.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">Sin datos este mes.</div>';
                 return;
             }
+            
             let dataRank = {};
+            let casaData = { b: 0, m: 0 };
+
             snap.forEach(doc => {
                 const d = doc.data();
-                if(!dataRank[d.t]) dataRank[d.t] = { botellas: 0, comision: 0, bonos: 0 };
-                if(d.b === "Botella") {
+                const nombreNorm = d.t.trim().toUpperCase();
+
+                if(nombreNorm === "CASA") {
+                    casaData.b += 1;
+                    casaData.m += (d.m || 0);
+                } else {
+                    if(!dataRank[d.t]) dataRank[d.t] = { botellas: 0, comision: 0 };
                     dataRank[d.t].botellas += 1;
                     dataRank[d.t].comision += (d.m || 0);
-                } else {
-                    dataRank[d.t].bonos += (d.m || 0);
                 }
             });
+
+            if(casaData.b > 0) {
+                casaBox.style.display = "block";
+                infoCasa.innerText = `${casaData.b} Botellas | Comisión Total: S/ ${casaData.m.toFixed(2)}`;
+            }
 
             let finalRank = Object.entries(dataRank).sort((a,b) => b[1].botellas - a[1].botellas);
             
             finalRank.forEach((item, index) => {
                 const [nombre, info] = item;
+                const inicial = nombre.charAt(0);
+                const posicion = index + 1;
+
                 if(index < 3) {
                     let clase = (index === 0) ? "oro" : (index === 1) ? "plata" : "bronce";
-                    let medal = (index === 0) ? "🥇" : (index === 1) ? "🥈" : "🥉";
                     podium.innerHTML += `
                         <div class="rank-card ${clase}">
+                            <div class="rank-badge">${posicion}</div>
                             <div class="rank-info">
-                                <span class="rank-medal">${medal}</span>
-                                <div>
+                                <div class="rank-avatar">${inicial}</div>
+                                <div class="rank-main-text">
                                     <span class="rank-name">${nombre}</span>
-                                    <span class="rank-qty">${info.botellas} Botellas</span>
+                                    <span class="rank-qty">${info.botellas} Botellas logradas</span>
                                 </div>
                             </div>
                             <div class="rank-monto">
-                                <b>Com: S/ ${info.comision}</b>
-                                <b>Bono: S/ ${info.bonos}</b>
+                                <span>Total Pago</span>
+                                <b>S/ ${info.comision.toFixed(2)}</b>
                             </div>
                         </div>`;
                 } else {
                     resto.innerHTML += `
                         <div class="row-ranking">
-                            <span style="font-weight:bold; color:#888;">#${index+1} ${nombre} (${info.botellas} bot.)</span>
-                            <span style="color:#d4af37; font-weight:bold;">S/ ${info.comision + info.bonos}</span>
+                            <span style="font-weight:bold; color:#eee;"><span style="color:#d4af37; margin-right:8px;">#${posicion}</span> ${nombre}</span>
+                            <div style="text-align:right;">
+                                <div style="font-size:0.8em; color:#888;">${info.botellas} bot.</div>
+                                <span style="color:#d4af37; font-weight:bold;">S/ ${info.comision.toFixed(2)}</span>
+                            </div>
                         </div>`;
                 }
             });
