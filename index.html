@@ -197,6 +197,14 @@
         cargarReporte();
     }
 
+    // Mejora: Función para sumar botellas (maneja números o texto "Botella")
+    function obtenerCantB(val) {
+        if (!isNaN(parseFloat(val)) && isFinite(val)) {
+            return parseFloat(val);
+        }
+        return (val && val !== "") ? 1 : 0;
+    }
+
     function cargarReporte() {
         const modo = document.getElementById('rango-tiempo').value;
         const lista = document.getElementById('lista-reporte');
@@ -229,7 +237,8 @@
         } else if (modo === 'quincena') {
             const m = document.getElementById('mes-quincena').value;
             const q = document.getElementById('select-quincena').value;
-            fI = (q === "1") ? m+"-01" : m+"-15";
+            // Mejora: La 2da quincena empieza estrictamente el 16
+            fI = (q === "1") ? m+"-01" : m+"-16";
             fF = (q === "1") ? m+"-15" : m+"-31";
             consulta = consulta.where("f", ">=", fI).where("f", "<=", fF);
         } else if (modo === 'mes') {
@@ -248,19 +257,29 @@
             if(modo === 'dia') {
                 snap.forEach(doc => {
                     const d = doc.data();
-                    vT += (d.p || 0); cT += (d.m || 0);
-                    lista.innerHTML += `<tr><td style="color:#d4af37; font-weight:bold;">${d.t}</td><td>${d.b}</td><td>S/ ${d.p || 0}</td><td>S/ ${d.m || 0}</td></tr>`;
+                    const p = parseFloat(d.p) || 0;
+                    const m = parseFloat(d.m) || 0;
+                    vT += p; cT += m;
+                    // Normalizamos nombre solo para mostrar
+                    const n = d.t ? d.t.toString().trim().toUpperCase() : "ANÓNIMO";
+                    lista.innerHTML += `<tr><td style="color:#d4af37; font-weight:bold;">${n}</td><td>${d.b}</td><td>S/ ${p.toFixed(2)}</td><td>S/ ${m.toFixed(2)}</td></tr>`;
                 });
                 lista.innerHTML += `<tr class="total-row"><td colspan="2">TOTAL</td><td>S/ ${vT.toFixed(2)}</td><td>S/ ${cT.toFixed(2)}</td></tr>`;
             } else {
                 let agrupado = {};
                 snap.forEach(doc => {
                     const d = doc.data();
-                    vT += (d.p || 0); cT += (d.m || 0);
-                    if(!agrupado[d.t]) agrupado[d.t] = { b: 0, pTot: 0, com: 0 };
-                    agrupado[d.t].b += 1;
-                    agrupado[d.t].pTot += (d.p || 0);
-                    agrupado[d.t].com += (d.m || 0);
+                    const p = parseFloat(d.p) || 0;
+                    const m = parseFloat(d.m) || 0;
+                    const cantB = obtenerCantB(d.b);
+                    // Mejora: Normalización de nombres para evitar duplicados por mayúsculas/minúsculas
+                    const nombre = d.t ? d.t.toString().trim().toUpperCase() : "ANÓNIMO";
+                    
+                    vT += p; cT += m;
+                    if(!agrupado[nombre]) agrupado[nombre] = { b: 0, pTot: 0, com: 0 };
+                    agrupado[nombre].b += cantB;
+                    agrupado[nombre].pTot += p;
+                    agrupado[nombre].com += m;
                 });
                 let sortable = Object.entries(agrupado).sort((a,b) => b[1].b - a[1].b);
                 sortable.forEach(item => {
@@ -300,15 +319,18 @@
 
             snap.forEach(doc => {
                 const d = doc.data();
-                const nombreNorm = d.t.trim().toUpperCase();
+                // Mejora: Normalización estricta a MAYÚSCULAS
+                const nombreNorm = d.t ? d.t.toString().trim().toUpperCase() : "ANÓNIMO";
+                const cantB = obtenerCantB(d.b);
+                const comision = parseFloat(d.m) || 0;
 
                 if(nombreNorm === "CASA") {
-                    casaData.b += 1;
-                    casaData.m += (d.m || 0);
+                    casaData.b += cantB;
+                    casaData.m += comision;
                 } else {
-                    if(!dataRank[d.t]) dataRank[d.t] = { botellas: 0, comision: 0 };
-                    dataRank[d.t].botellas += 1;
-                    dataRank[d.t].comision += (d.m || 0);
+                    if(!dataRank[nombreNorm]) dataRank[nombreNorm] = { botellas: 0, comision: 0 };
+                    dataRank[nombreNorm].botellas += cantB;
+                    dataRank[nombreNorm].comision += comision;
                 }
             });
 
